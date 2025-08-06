@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Despedida de Soltero!</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: url('antonio.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    h2, h3, label, .countdown {
+      background-color: rgba(255, 255, 255, 0.8);
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 10px;
+    }
+    .countdown {
+      font-size: 1.3em;
+      margin: 20px 0;
+    }
+    .btn-group {
+      margin-top: 10px;
+    }
+    .btn-group button {
+      font-size: 1.1em;
+      margin: 10px 5px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .yes {
+      background-color: #28a745;
+      color: white;
+    }
+    .no {
+      background-color: #dc3545;
+      color: white;
+    }
+    .formulario, .confirmados {
+      margin-top: 30px;
+    }
+    .confirmados ul {
+      list-style: none;
+      padding: 0;
+    }
+    .confirmados li {
+      margin: 5px 0;
+    }
+    .oculto {
+      display: none;
+    }
+    input, select, button {
+      margin-top: 5px;
+      padding: 8px;
+      border-radius: 5px;
+      width: 90%;
+      max-width: 300px;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+      .btn-group button {
+        font-size: 1em;
+        padding: 10px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999;"></canvas>
+
+  <div class="container">
+    <h1>🎉¡Despedida de Soltero de Antonio! 🎉</h1>
+    $1
+    <h2>🍽️ Cena a las 22:00</h2>
+
+    <div class="countdown">
+      Faltan <span id="contador"></span> días para la fiesta
+    </div>
+
+    <h2>🥳¡¿Te unes a la locura?!</h2>
+    <div class="btn-group">
+      <button class="yes" onclick="mostrarFormulario(true)">¡Me apunto, va a ser legendario! 🍻</button>
+      <button class="no" onclick="mostrarFormulario(false)">Paso... pero lloro por dentro 😔</button>
+    </div>
+
+    <div class="formulario oculto" id="formulario">
+      <h3>Confirma tu asistencia</h3>
+      <form onsubmit="confirmar(event)">
+        <label>Nombre o apodo:</label><br>
+        <input type="text" id="nombre" required><br><br>
+        <label>¿Te quedarás todo el viaje?</label><br>
+        <select id="dias">
+          <option value="Sí">Sí</option>
+          <option value="Solo 1 o 2 días">Solo 1 o 2 días</option>
+        </select><br><br>
+        <label>Restricciones alimentarias:</label><br>
+        <input type="text" id="alergias"><br><br>
+        <label>¡Pregunta clave! ¿Qué es lo más probable que pase?</label><br>
+        <input type="text" id="respuesta" required><br><br>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+
+    <div class="confirmados">
+      <h3>📅 Invitados confirmados:</h3>
+      <ul id="listaConfirmados"></ul>
+    </div>
+  </div>
+
+  <script>
+    const fechaEvento = new Date("2025-08-06");
+    const hoy = new Date();
+    const diff = Math.max(0, Math.ceil((fechaEvento - hoy) / (1000 * 60 * 60 * 24)));
+    document.getElementById("contador").textContent = diff;
+
+    function mostrarFormulario(asistira) {
+      if (!asistira) {
+        alert("¡Te lo perderás... pero te guardamos una cerveza!");
+        return;
+      }
+      document.getElementById("formulario").classList.remove("oculto");
+    }
+
+    function confirmar(event) {
+      event.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const dias = document.getElementById("dias").value;
+      const alergias = document.getElementById("alergias").value;
+      const respuesta = document.getElementById("respuesta").value;
+
+      const li = document.createElement("li");
+      li.textContent = `${nombre} ✅ - Se queda: ${dias} - Cree que pasará: "${respuesta}"`;
+      document.getElementById("listaConfirmados").appendChild(li);
+
+      alert("¡Confirmado! Nos vemos pronto.");
+      document.getElementById("formulario").classList.add("oculto");
+      event.target.reset();
+    }
+
+    window.onload = function () {
+      const canvas = document.getElementById("confettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const confettis = Array.from({ length: 150 }).map(() => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 20 + 10,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        tilt: Math.random() * 10 - 10,
+        tiltAngle: 0,
+        tiltAngleIncrement: Math.random() * 0.07 + 0.05
+      }));
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confettis.forEach(c => {
+          ctx.beginPath();
+          ctx.lineWidth = c.r / 2;
+          ctx.strokeStyle = c.color;
+          ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+          ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.d / 2);
+          ctx.stroke();
+        });
+        update();
+      }
+
+      function update() {
+        confettis.forEach(c => {
+          c.tiltAngle += c.tiltAngleIncrement;
+          c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+          c.x += Math.sin(c.tiltAngle);
+          c.tilt = Math.sin(c.tiltAngle) * 15;
+          if (c.y > canvas.height) {
+            c.y = -10;
+            c.x = Math.random() * canvas.width;
+          }
+        });
+      }
+
+      setInterval(draw, 30);
+    };
+  </script>
+
+</body>
+</html>
